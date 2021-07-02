@@ -334,6 +334,8 @@ void loop()
         Serial.print("/");
         Serial.print(myIMU.pitch, 2);
         Serial.print("/");
+        Serial.print(myIMU.gRes);
+        Serial.print("/");
         Serial.println(myIMU.yaw, 2);
 
         /*Serial.print("rate = ");
