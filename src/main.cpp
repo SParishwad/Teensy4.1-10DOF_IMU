@@ -330,11 +330,11 @@ void loop()
       if(SerialDebug)
       {
         //Serial.print("Yaw, Pitch, Roll: ");
-        Serial.print(myIMU.yaw, 2);
+        Serial.print(myIMU.roll, 2);
         Serial.print("/");
         Serial.print(myIMU.pitch, 2);
         Serial.print("/");
-        Serial.println(myIMU.roll, 2);
+        Serial.println(myIMU.yaw, 2);
 
         /*Serial.print("rate = ");
         Serial.print((float)myIMU.sumCount / myIMU.sum, 2);
