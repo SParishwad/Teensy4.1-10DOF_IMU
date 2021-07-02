@@ -80,8 +80,8 @@ void loop() {
   
 
   // Complementary Filter
-  roll = 0.5 * gyroAngleX + 0.5 * accAngleX;
-  pitch = 0.5 * gyroAngleY + 0.5 * accAngleY;
+  roll = 1 * gyroAngleX + 0 * accAngleX;
+  pitch = 1 * gyroAngleY + 0 * accAngleY;
  
   Serial.print(roll);
   Serial.print("/");
