@@ -4,8 +4,12 @@ int status;
 float AccX, AccY, AccZ;
 float GyroX, GyroY, GyroZ;
 float accAngleX, accAngleY, gyroAngleX, gyroAngleY, gyroAngleZ = 0;
-float roll, pitch, yaw, rollF, pitchF;
+float roll, pitch, yaw;
+float AccErrorX, AccErrorY, GyroErrorX, GyroErrorY, GyroErrorZ;
 float elapsedTime, currentTime, previousTime;
+int c = 0;
+
+void calculate_IMU_errors();
 
 void setup() {
   // serial to display data
@@ -29,6 +33,9 @@ void setup() {
   IMU.setDlpfBandwidth(MPU9250::DLPF_BANDWIDTH_20HZ);
   // setting SRD to 19 for a 50 Hz update rate
   IMU.setSrd(19);
+
+  calculate_IMU_errors();
+  delay(20);
 }
 
 void loop() {
@@ -38,16 +45,16 @@ void loop() {
   AccX = IMU.getAccelX_mss()/9.81;
   AccY = IMU.getAccelY_mss()/9.81;
   AccZ = IMU.getAccelZ_mss()/9.81;
-  accAngleX = atan(AccY / sqrt(pow(AccX,2) + pow(AccZ,2))) * 180 / PI;
-  accAngleY = atan(-1 * AccX / sqrt(pow(AccY, 2) + pow(AccZ , 2))) * 180 / PI;
+  accAngleX = (atan(AccY / sqrt(pow(AccX,2) + pow(AccZ,2))) * 180 / PI) - 1.16;
+  accAngleY = (atan(-1 * AccX / sqrt(pow(AccY, 2) + pow(AccZ , 2))) * 180 / PI) + 2.84;
 
 
   previousTime = currentTime;
   currentTime = millis();
   elapsedTime = (currentTime - previousTime)/1000;
-  GyroX = IMU.getGyroX_rads() * 180 / PI;
-  GyroY = IMU.getGyroY_rads() * 180 / PI;
-  GyroZ = IMU.getGyroZ_rads() * 180 / PI;
+  GyroX = (IMU.getGyroX_rads() * 180 / PI) - 1.12;
+  GyroY = (IMU.getGyroY_rads() * 180 / PI) + 2.72;
+  GyroZ = (IMU.getGyroZ_rads() * 180 / PI) - 1.59;
 
   gyroAngleX = gyroAngleX + GyroX * elapsedTime;
   gyroAngleY = gyroAngleY + GyroY * elapsedTime;
@@ -80,8 +87,8 @@ void loop() {
   
 
   // Complementary Filter
-  roll = 0.98 * gyroAngleX + 0.02 * accAngleX;
-  pitch = 0.98 * gyroAngleY + 0.02 * accAngleY;
+  roll = 0.94 * gyroAngleX + 0.06 * accAngleX;
+  pitch = 0.94 * gyroAngleY + 0.06 * accAngleY;
  
   Serial.print(roll);
   Serial.print("/");
@@ -90,5 +97,48 @@ void loop() {
   Serial.println(yaw);
   //Serial.print("/");
   //Serial.println(elapsedTime*1000);
-  delay(125);
+  delay(50);
+}
+
+void calculate_IMU_errors(){
+  while (c < 200){
+    AccX = IMU.getAccelX_mss()/9.81;
+    AccY = IMU.getAccelY_mss()/9.81;
+    AccZ = IMU.getAccelZ_mss()/9.81;
+
+    AccErrorX = AccErrorX + ((atan((AccY) / sqrt(pow((AccX), 2) + pow((AccZ), 2))) * 180 / PI));
+    AccErrorY = AccErrorY + ((atan(-1 * (AccX) / sqrt(pow((AccY), 2) + pow((AccZ), 2))) * 180 / PI));
+    c++;
+  }
+
+  AccErrorX = AccErrorX / 200;
+  AccErrorY = AccErrorY / 200;
+  c = 0;
+
+  // Read Gyro Values 200 times. 
+  while (c < 200){
+    GyroX = IMU.getGyroX_rads() * 180 / PI;
+    GyroY = IMU.getGyroY_rads() * 180 / PI;
+    GyroZ = IMU.getGyroZ_rads() * 180 / PI;
+    // Sum all readings
+    GyroErrorX = GyroErrorX + GyroX;
+    GyroErrorY = GyroErrorY + GyroY;
+    GyroErrorZ = GyroErrorZ + GyroZ;
+    c++;
+  }
+  GyroErrorX = GyroErrorX / 200;
+  GyroErrorY = GyroErrorY / 200;
+  GyroErrorZ = GyroErrorZ / 200;
+
+  // Print all the error values.
+  Serial.print("AccErrorX: ");
+  Serial.println(AccErrorX);
+  Serial.print("AccErrorY: ");
+  Serial.println(AccErrorY);
+  Serial.print("GyroErrorX: ");
+  Serial.println(GyroErrorX);
+  Serial.print("GyroErrorY: ");
+  Serial.println(GyroErrorY);
+  Serial.print("GyroErrorZ: ");
+  Serial.println(GyroErrorZ);
 }
