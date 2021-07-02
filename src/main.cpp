@@ -44,7 +44,7 @@ void loop() {
 
   previousTime = currentTime;
   currentTime = millis();
-  elapsedTime = (currentTime - previousTime) / 1000;
+  elapsedTime = (currentTime - previousTime)/1000;
   GyroX = IMU.getGyroX_rads() * 180 / PI;
   GyroY = IMU.getGyroY_rads() * 180 / PI;
   GyroZ = IMU.getGyroZ_rads() * 180 / PI;
@@ -80,13 +80,15 @@ void loop() {
   
 
   // Complementary Filter
-  roll = 1 * gyroAngleX + 0 * accAngleX;
-  pitch = 1 * gyroAngleY + 0 * accAngleY;
+  roll = 0.98 * gyroAngleX + 0.02 * accAngleX;
+  pitch = 0.98 * gyroAngleY + 0.02 * accAngleY;
  
   Serial.print(roll);
   Serial.print("/");
   Serial.print(pitch);
   Serial.print("/");
   Serial.println(yaw);
-  //delay(50);
+  //Serial.print("/");
+  //Serial.println(elapsedTime*1000);
+  delay(125);
 }
