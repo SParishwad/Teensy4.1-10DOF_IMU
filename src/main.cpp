@@ -45,16 +45,16 @@ void loop() {
   AccX = IMU.getAccelX_mss()/9.81;
   AccY = IMU.getAccelY_mss()/9.81;
   AccZ = IMU.getAccelZ_mss()/9.81;
-  accAngleX = (atan(AccY / sqrt(pow(AccX,2) + pow(AccZ,2))) * 180 / PI) - 1.16;
-  accAngleY = (atan(-1 * AccX / sqrt(pow(AccY, 2) + pow(AccZ , 2))) * 180 / PI) + 2.84;
+  accAngleX = (atan(AccY / sqrt(pow(AccX,2) + pow(AccZ,2))) * 180 / PI) + 0.14;
+  accAngleY = (atan(-1 * AccX / sqrt(pow(AccY, 2) + pow(AccZ , 2))) * 180 / PI) - 89.86;
 
 
   previousTime = currentTime;
   currentTime = millis();
   elapsedTime = (currentTime - previousTime)/1000;
-  GyroX = (IMU.getGyroX_rads() * 180 / PI) - 1.12;
-  GyroY = (IMU.getGyroY_rads() * 180 / PI) + 2.72;
-  GyroZ = (IMU.getGyroZ_rads() * 180 / PI) - 1.59;
+  GyroX = (IMU.getGyroX_rads() * 180 / PI) - 0.89;
+  GyroY = (IMU.getGyroY_rads() * 180 / PI) + 0.27;
+  GyroZ = (IMU.getGyroZ_rads() * 180 / PI) + 0.26;
 
   gyroAngleX = gyroAngleX + GyroX * elapsedTime;
   gyroAngleY = gyroAngleY + GyroY * elapsedTime;
@@ -91,9 +91,9 @@ void loop() {
   pitch = 0.94 * gyroAngleY + 0.06 * accAngleY;
  
   Serial.print(roll);
-  Serial.print("/");
+  Serial.print(",");
   Serial.print(pitch);
-  Serial.print("/");
+  Serial.print(",");
   Serial.println(yaw);
   //Serial.print("/");
   //Serial.println(elapsedTime*1000);
